@@ -17,14 +17,17 @@
       <div class="row my-5">
         <div class="col">
           <div class="form-group py-4 border-bottom">
+            <label>Paste geoJSON as text</label>
             <textarea id="textarea" class="form-control" placeholder="Paste here GeoJSON to validate" onchange="validateText(event)"></textarea>
           </div>
 
           <div class="form-group py-4 border-bottom">
+            <label>or insert here the absolute URL of the GeoJSON file</label>
             <input type="url" id="url" class="form-control" placeholder="URL of GeoJSON file to validate" onchange="validateUrl(event)"/>
           </div>
 
           <div class="form-group py-4 border-bottom">
+            <label>or upload here a GeoJSON file (it will be not saved in any server)</label>
             <input type="file" id="file" accept='text/json' placeholder="Upload GeoJSON file to validate" onchange="validateFile(event)">
           </div>
 
