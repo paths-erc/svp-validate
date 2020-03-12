@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>SVP validator</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>SVP Validator</h1>
+
+      <div class="row my-5">
+        <div class="col">
+          <div class="form-group py-4 border-bottom">
+            <textarea id="textarea" class="form-control" placeholder="Paste here GeoJSON to validate" onchange="validateText(event)"></textarea>
+          </div>
+
+          <div class="form-group py-4 border-bottom">
+            <input type="url" id="url" class="form-control" placeholder="URL of GeoJSON file to validate" onchange="validateUrl(event)"/>
+          </div>
+
+          <div class="form-group py-4 border-bottom">
+            <input type="file" id="file" accept='text/json' placeholder="Upload GeoJSON file to validate" onchange="validateFile(event)">
+          </div>
+
+        </div>
+        <div class="col">
+          <div id="result" class="border p-5 text-white"></div>
+          <pre id="debug" class="border m-5"></pre>
+        </div>
+      </div>
+    </div>
+    <script src="./SVPValidate.js"></script>
+    <script>
+
+      const validateUrl = event => {
+        const url = event.target.value;
+        fetch(url)
+          .then(response => response.text())
+          .then(response => {
+            validate(response);
+          })
+          .catch( error => {
+              console.log(error);
+          }
+        );
+      };
+
+      const validateText = event => {
+        validate(event.target.value);
+      }
+
+
+      var validateFile = function(event) {
+        var input = event.target;
+
+        var reader = new FileReader();
+        reader.onload = function(){
+          const gj = reader.result;
+          validate(gj);
+        };
+        reader.readAsText(input.files[0]);
+      };
+
+
+
+
+
+      const validate = (text) => {
+        document.getElementById('result').classList.remove('bg-success');
+        document.getElementById('result').classList.remove('bg-danger');
+        document.getElementById('debug').innerText = '';
+
+        try {
+          const gj = JSON.parse(text);
+
+          const ret = SVPValidate(gj);
+        
+          if (ret.status === 'success') {
+            document.getElementById('result').classList.add('bg-success');
+          } else {
+            document.getElementById('result').classList.add('bg-danger');
+          }
+          document.getElementById('result').innerText = ret.text;
+          if(ret.debug){
+            document.getElementById('debug').innerText = JSON.stringify(ret.debug, null, 2);
+          }
+        } catch (error) {
+          document.getElementById('result').classList.add('bg-danger');
+          document.getElementById('result').innerText = "Not valid JSON";
+          document.getElementById('debug').innerText = JSON.stringify(error, null, 2);
+        }
+        
+        
+      }
+    </script>
+  </body>
+</html>
